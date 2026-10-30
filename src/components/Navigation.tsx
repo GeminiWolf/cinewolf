@@ -44,7 +44,7 @@ const Navigation = () => {
                 href="/"
                 className="text-2xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent"
               >
-                CineWolf
+                CineStream
               </Link>
               <div className="hidden md:flex space-x-6">
                 {NAV_LINKS.map((l) => {
