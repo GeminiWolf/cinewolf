@@ -10,7 +10,7 @@ const Footer = () => {
             href="/"
             className="text-2xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent"
           >
-            CineWolf
+            CineStream
           </Link>
           <p className="mt-3 text-gray-300 text-sm">
             Discover trending, popular and top rated movies and TV shows.
@@ -38,7 +38,7 @@ const Footer = () => {
         </nav>
       </div>
       <div className="max-w-7xl mx-auto border-t border-gray-800 mt-8 pt-8 flex flex-col sm:flex-row justify-between gap-2 text-sm text-gray-400">
-        <p>&copy; {new Date().getFullYear()} CineWolf. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} CineStream. All rights reserved.</p>
         <p>
           Data and images from{" "}
           <a

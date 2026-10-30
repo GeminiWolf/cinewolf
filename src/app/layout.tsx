@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "CineWolf | Discover Movies & TV Shows",
-    template: "%s | CineWolf",
+    default: "CineStream | Discover Movies & TV Shows",
+    template: "%s | CineStream",
   },
   description:
     "CineWolf: browse trending, popular and top rated movies and TV shows, with trailers, ratings and details.",
