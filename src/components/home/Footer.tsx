@@ -1,94 +1,56 @@
 import React from "react";
+import Link from "next/link";
 
 const Footer = () => {
   return (
-    <footer className="py-12 px-4 sm:px-6 lg:px-8 border-t border-gray-800">
-      <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
-          <div>
-            <h3 className="font-semibold mb-4">Company</h3>
-            <ul className="space-y-2 text-gray-400">
-              <li>
-                <a href="#" className="hover:text-white transition-colors">
-                  About Us
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-white transition-colors">
-                  Careers
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-white transition-colors">
-                  Press
-                </a>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="font-semibold mb-4">Support</h3>
-            <ul className="space-y-2 text-gray-400">
-              <li>
-                <a href="#" className="hover:text-white transition-colors">
-                  Help Center
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-white transition-colors">
-                  Contact Us
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-white transition-colors">
-                  Privacy
-                </a>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="font-semibold mb-4">Content</h3>
-            <ul className="space-y-2 text-gray-400">
-              <li>
-                <a href="#" className="hover:text-white transition-colors">
-                  Movies
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-white transition-colors">
-                  TV Shows
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-white transition-colors">
-                  Originals
-                </a>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="font-semibold mb-4">Connect</h3>
-            <ul className="space-y-2 text-gray-400">
-              <li>
-                <a href="#" className="hover:text-white transition-colors">
-                  Social Media
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-white transition-colors">
-                  Newsletter
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-white transition-colors">
-                  Blog
-                </a>
-              </li>
-            </ul>
-          </div>
+    <footer className="py-12 px-4 sm:px-6 lg:px-8 border-t border-gray-800 bg-black text-white">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-start md:justify-between gap-8">
+        <div className="max-w-sm">
+          <Link
+            href="/"
+            className="text-2xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent"
+          >
+            CineWolf
+          </Link>
+          <p className="mt-3 text-gray-300 text-sm">
+            Discover trending, popular and top rated movies and TV shows.
+          </p>
         </div>
-        <div className="border-t border-gray-800 pt-8 text-center text-gray-400">
-          <p>&copy; 2024 CineStream. All rights reserved.</p>
-        </div>
+        <nav aria-label="Footer">
+          <h3 className="font-semibold mb-4">Browse</h3>
+          <ul className="space-y-2 text-gray-300">
+            <li>
+              <Link href="/" className="hover:text-white transition-colors">
+                Home
+              </Link>
+            </li>
+            <li>
+              <Link href="/movies" className="hover:text-white transition-colors">
+                Movies
+              </Link>
+            </li>
+            <li>
+              <Link href="/series" className="hover:text-white transition-colors">
+                TV Shows
+              </Link>
+            </li>
+          </ul>
+        </nav>
+      </div>
+      <div className="max-w-7xl mx-auto border-t border-gray-800 mt-8 pt-8 flex flex-col sm:flex-row justify-between gap-2 text-sm text-gray-400">
+        <p>&copy; {new Date().getFullYear()} CineWolf. All rights reserved.</p>
+        <p>
+          Data and images from{" "}
+          <a
+            href="https://www.themoviedb.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-white"
+          >
+            TMDB
+          </a>
+          . This product uses the TMDB API but is not endorsed or certified by TMDB.
+        </p>
       </div>
     </footer>
   );

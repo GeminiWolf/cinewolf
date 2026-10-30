@@ -9,6 +9,7 @@ import Footer from "@/components/home/Footer";
 import { MovieListService } from "@/service/movie.service";
 import { MovieListResponse, Result } from "@/types/movie";
 import dayjs from "dayjs";
+import { CardGridSkeleton } from "@/components/Skeletons";
 import { usePaginationNavigation } from "@/hooks/usePaginationNavigation";
 
 export default function MoviesPage() {
@@ -133,13 +134,30 @@ export default function MoviesPage() {
     onPageChange: handlePageChange,
   });
 
+  // Debounced live search: query TMDB as the user types.
+  useEffect(() => {
+    const q = searchQuery.trim();
+    const t = setTimeout(() => {
+      if (q) {
+        searchMovies(q, 1);
+      } else if (isSearching) {
+        setIsSearching(false);
+        fetchMovies(selectedCategory, 1);
+      }
+    }, 400);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery]);
+
   const getImageUrl = (posterPath: string | null) => {
     if (!posterPath) return "/placeholder-movie.jpg";
     return `https://image.tmdb.org/t/p/w500${posterPath}`;
   };
 
   const formatDate = (date: string) => {
-    return dayjs(date).format("MMM DD, YYYY");
+    if (!date) return "TBA";
+    const d = dayjs(date);
+    return d.isValid() ? d.format("MMM D, YYYY") : "TBA";
   };
 
   const renderPagination = () => {
@@ -188,25 +206,14 @@ export default function MoviesPage() {
     );
   };
 
-  if (loading && movies.length === 0) {
-    return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-4"></div>
-          <p className="text-xl">Loading movies...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-black text-white">
       <Navigation />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-12">
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-white mb-2">Movies</h1>
-          <p className="text-gray-400">
+          <p className="text-gray-300">
             {isSearching
               ? `Search results for "${searchQuery}" (${totalResults} movies found)`
               : `Discover ${totalResults} movies`}
@@ -218,7 +225,8 @@ export default function MoviesPage() {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
-                type="text"
+                type="search"
+                aria-label="Search"
                 placeholder="Search movies..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -250,7 +258,22 @@ export default function MoviesPage() {
           </div>
         )}
 
-        {!error && (
+        {!error && loading && <CardGridSkeleton />}
+
+        {!error && !loading && movies.length === 0 && (
+          <div className="text-center py-20">
+            <p className="text-xl text-white font-semibold">
+              {isSearching
+                ? `No movies found for "${searchQuery.trim()}"`
+                : "Nothing to show right now"}
+            </p>
+            <p className="mt-2 text-gray-300">
+              {isSearching ? "Try a different title or check the spelling." : "Please try again later."}
+            </p>
+          </div>
+        )}
+
+        {!error && !loading && movies.length > 0 && (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
             {movies.map((movie) => (
               <Link
@@ -274,13 +297,13 @@ export default function MoviesPage() {
                     {movie.title}
                   </h3>
 
-                  <div className="flex items-center justify-between text-xs text-gray-400">
+                  <div className="flex items-center justify-between gap-2 text-sm text-gray-200">
                     <div className="flex items-center space-x-1">
-                      <Star className="w-3 h-3 text-yellow-400 fill-current" />
-                      <span>{movie.vote_average.toFixed(1)}</span>
+                      <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                      <span className="font-medium">{movie.vote_average > 0 ? movie.vote_average.toFixed(1) : "NR"}</span>
                     </div>
                     <div className="flex items-center space-x-1">
-                      <Calendar className="w-3 h-3" />
+                      <Calendar className="w-4 h-4 text-gray-300" />
                       <span>{formatDate(movie?.release_date)}</span>
                     </div>
                   </div>
@@ -290,7 +313,7 @@ export default function MoviesPage() {
           </div>
         )}
 
-        {totalPages > 1 && renderPagination()}
+        {!loading && totalPages > 1 && renderPagination()}
       </main>
 
       <Footer />

@@ -5,6 +5,7 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/home/Footer";
 import DetailHero from "@/components/detail/DetailHero";
 import MediaInfo from "@/components/detail/MediaInfo";
+import { DetailSkeleton } from "@/components/Skeletons";
 import { SeriesService } from "@/service/series.service";
 import { TVDetail } from "@/types/seriesDetails";
 import { formatDisplayDate, getYearFromDate } from "@/utils/dateUtils";
@@ -24,7 +25,6 @@ export default function TVDetailPage({
     const tvService = new SeriesService();
     const fetchTVDetail = async () => {
       try {
-        console.log("fetching TV detail", resolvedParams.id);
         setLoading(true);
         setError(null);
         const tvData = await tvService.getSeriesDetail(resolvedParams.id);
@@ -42,22 +42,19 @@ export default function TVDetailPage({
     }
   }, [resolvedParams.id]);
 
-  console.log("tvShow", tvShow);
-
   if (loading) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-4"></div>
-          <p className="text-xl">Loading TV show details...</p>
-        </div>
-      </div>
+      <>
+        <Navigation />
+        <DetailSkeleton />
+      </>
     );
   }
 
   if (error || !tvShow) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <Navigation />
         <div className="text-center">
           <h1 className="text-2xl font-bold text-red-500 mb-4">Error</h1>
           <p className="text-gray-300">{error || "TV show not found"}</p>
@@ -122,12 +119,15 @@ export default function TVDetailPage({
                       className="flex items-center space-x-3"
                     >
                       {network.logo_path && (
-                        <Image
-                          src={`https://image.tmdb.org/t/p/w92${network.logo_path}`}
-                          alt={network.name}
-                          fill
-                          className="w-8 h-8 object-contain"
-                        />
+                        <span className="relative w-10 h-8 flex-shrink-0 bg-white/90 rounded">
+                          <Image
+                            src={`https://image.tmdb.org/t/p/w92${network.logo_path}`}
+                            alt={network.name}
+                            fill
+                            sizes="40px"
+                            className="object-contain p-1"
+                          />
+                        </span>
                       )}
                       <span className="text-white">{network.name}</span>
                     </div>
@@ -146,12 +146,13 @@ export default function TVDetailPage({
                       key={season.id}
                       className="flex items-center space-x-3 p-2 rounded bg-gray-800/30"
                     >
-                      <div className="w-12 h-16 bg-gray-700 rounded flex-shrink-0">
+                      <div className="relative w-12 h-16 bg-gray-700 rounded flex-shrink-0 overflow-hidden">
                         {season.poster_path && (
                           <Image
                             src={`https://image.tmdb.org/t/p/w92${season.poster_path}`}
                             alt={season.name}
-                            className="w-full h-full object-cover rounded"
+                            className="object-cover"
+                            sizes="48px"
                             fill
                           />
                         )}

@@ -5,6 +5,7 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/home/Footer";
 import DetailHero from "@/components/detail/DetailHero";
 import MediaInfo from "@/components/detail/MediaInfo";
+import { DetailSkeleton } from "@/components/Skeletons";
 import { MovieService } from "@/service/movie.service";
 import { MovieDetail } from "@/types/movieDetail";
 
@@ -41,18 +42,17 @@ export default function MovieDetailPage({
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-4"></div>
-          <p className="text-xl">Loading movie details...</p>
-        </div>
-      </div>
+      <>
+        <Navigation />
+        <DetailSkeleton />
+      </>
     );
   }
 
   if (error || !movie) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <Navigation />
         <div className="text-center">
           <h1 className="text-2xl font-bold text-red-500 mb-4">Error</h1>
           <p className="text-gray-300">{error || "Movie not found"}</p>

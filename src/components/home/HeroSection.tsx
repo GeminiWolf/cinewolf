@@ -8,6 +8,8 @@ import { MediaService } from "@/service/media.service";
 import { useMovieStore } from "@/store/movieStore";
 import { Result } from "@/types/movie";
 import dayjs from "dayjs";
+import { genreNames } from "@/utils/genres";
+import { HeroSkeleton } from "@/components/Skeletons";
 
 // Import Swiper styles
 import "swiper/css";
@@ -27,11 +29,7 @@ const HeroSection = () => {
   };
 
   if (isLoading) {
-    return (
-      <section className="relative h-screen flex items-center justify-center">
-        <div className="text-white text-xl">Loading...</div>
-      </section>
-    );
+    return <HeroSkeleton />;
   }
 
   if (error) {
@@ -89,15 +87,29 @@ const HeroSection = () => {
                   <h1 className="text-5xl md:text-7xl font-bold leading-tight">
                     {movie?.title}
                   </h1>
-                  <div className="flex items-center space-x-4 text-gray-300">
-                    <span className="flex items-center space-x-1">
-                      <Star className="w-5 h-5 text-yellow-400 fill-current" />
-                      <span>{movie?.popularity}</span>
-                    </span>
-                    <span>{dayjs(movie?.release_date)?.format("YYYY")}</span>
-                    <span className="px-3 py-1 bg-gray-800 rounded-full text-sm">
-                      {movie?.genre_ids?.join(", ")}
-                    </span>
+                  <div className="flex flex-wrap items-center gap-3 text-gray-200">
+                    {movie?.vote_average > 0 && (
+                      <span
+                        className="flex items-center space-x-1"
+                        aria-label={`Rated ${movie.vote_average.toFixed(1)} out of 10`}
+                      >
+                        <Star className="w-5 h-5 text-yellow-400 fill-current" />
+                        <span>{movie.vote_average.toFixed(1)}</span>
+                      </span>
+                    )}
+                    {movie?.release_date && (
+                      <span>{dayjs(movie.release_date).format("YYYY")}</span>
+                    )}
+                    {genreNames(movie?.genre_ids)
+                      .slice(0, 3)
+                      .map((g) => (
+                        <span
+                          key={g}
+                          className="px-3 py-1 bg-gray-800/80 border border-gray-600 rounded-full text-sm text-gray-100"
+                        >
+                          {g}
+                        </span>
+                      ))}
                   </div>
                   <p className="text-lg text-gray-300 max-w-lg">
                     {movie?.overview}

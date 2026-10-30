@@ -18,9 +18,11 @@ const DetailHero: React.FC<DetailHeroProps> = ({ media, isTV = false }) => {
   const [isTrailerOpen, setIsTrailerOpen] = useState(false);
   const mediaService = new MediaService();
 
-  const getBackdropUrl = () => {
-    return mediaService.getPathImage(media.backdrop_path, "original");
-  };
+  const [backdropFailed, setBackdropFailed] = useState(false);
+  // Prefer the backdrop, fall back to the poster, else show a gradient.
+  const backdropPath = media.backdrop_path || media.poster_path;
+  const getBackdropUrl = () =>
+    mediaService.getPathImage(backdropPath, "w1280");
 
   const getTrailer = (): VideoResult | null => {
     if (media?.videos?.results) {
@@ -82,13 +84,19 @@ const DetailHero: React.FC<DetailHeroProps> = ({ media, isTV = false }) => {
       <section className="relative h-screen overflow-hidden">
         {/* Background Image */}
         <div className="absolute inset-0">
-          <Image
-            src={getBackdropUrl()}
-            alt={getTitle()}
-            fill
-            className="w-full h-full object-cover"
-            priority
-          />
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-950 via-black to-pink-950" />
+          {backdropPath && !backdropFailed && (
+            <Image
+              src={getBackdropUrl()}
+              alt=""
+              fill
+              sizes="100vw"
+              className="object-cover"
+              priority
+              unoptimized
+              onError={() => setBackdropFailed(true)}
+            />
+          )}
           <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent"></div>
           <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
         </div>
@@ -188,9 +196,8 @@ const DetailHero: React.FC<DetailHeroProps> = ({ media, isTV = false }) => {
                     src={mediaService.getPathImage(media.poster_path, "w500")}
                     alt={getTitle()}
                     fill
-                    objectFit="cover"
-                    objectPosition="center"
-                    className="w-full h-full object-cover rounded-lg shadow-2xl"
+                    sizes="320px"
+                    className="object-cover object-center rounded-lg shadow-2xl"
                   />
                 </div>
               </div>

@@ -17,7 +17,7 @@ const MovieCard = ({ movie }: { movie: TrendingResult }) => {
           <div className="relative w-full h-80">
             <Image
               src={pathUrl}
-              alt={movie.original_name || movie.original_title || ""}
+              alt={movie.name || movie.title || ""}
               fill
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
             />
@@ -30,8 +30,8 @@ const MovieCard = ({ movie }: { movie: TrendingResult }) => {
             </h3>
             <div className="flex items-center space-x-1">
               <Star className="w-4 h-4 text-yellow-400 fill-current" />
-              <span className="text-sm text-gray-300">
-                {movie.vote_average}
+              <span className="text-sm text-gray-100 font-medium">
+                {movie.vote_average > 0 ? movie.vote_average.toFixed(1) : "NR"}
               </span>
             </div>
           </div>

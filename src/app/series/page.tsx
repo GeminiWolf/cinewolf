@@ -9,6 +9,7 @@ import Footer from "@/components/home/Footer";
 import { SeriesListService } from "@/service/series.service";
 import { SeriesListResponse, Result } from "@/types/series";
 import dayjs from "dayjs";
+import { CardGridSkeleton } from "@/components/Skeletons";
 
 export default function SeriesPage() {
   const [series, setSeries] = useState<Result[]>([]);
@@ -149,13 +150,30 @@ export default function SeriesPage() {
     };
   }, [currentPage, handlePageChange]);
 
+  // Debounced live search: query TMDB as the user types.
+  useEffect(() => {
+    const q = searchQuery.trim();
+    const t = setTimeout(() => {
+      if (q) {
+        searchSeries(q, 1);
+      } else if (isSearching) {
+        setIsSearching(false);
+        fetchSeries(selectedCategory, 1);
+      }
+    }, 400);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery]);
+
   const getImageUrl = (posterPath: string | null) => {
     if (!posterPath) return "/placeholder-series.jpg";
     return `https://image.tmdb.org/t/p/w500${posterPath}`;
   };
 
   const formatDate = (date: string) => {
-    return dayjs(date).format("MMM DD, YYYY");
+    if (!date) return "TBA";
+    const d = dayjs(date);
+    return d.isValid() ? d.format("MMM D, YYYY") : "TBA";
   };
 
   const renderPagination = () => {
@@ -204,26 +222,15 @@ export default function SeriesPage() {
     );
   };
 
-  if (loading && series.length === 0) {
-    return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-4"></div>
-          <p className="text-xl">Loading series...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-black text-white">
       <Navigation />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-12">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-white mb-2">TV Series</h1>
-          <p className="text-gray-400">
+          <p className="text-gray-300">
             {isSearching
               ? `Search results for "${searchQuery}" (${totalResults} series found)`
               : `Discover ${totalResults} TV series`}
@@ -237,7 +244,8 @@ export default function SeriesPage() {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
-                type="text"
+                type="search"
+                aria-label="Search"
                 placeholder="Search TV series..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -272,7 +280,22 @@ export default function SeriesPage() {
         )}
 
         {/* Series Grid */}
-        {!error && (
+        {!error && loading && <CardGridSkeleton />}
+
+        {!error && !loading && series.length === 0 && (
+          <div className="text-center py-20">
+            <p className="text-xl text-white font-semibold">
+              {isSearching
+                ? `No TV shows found for "${searchQuery.trim()}"`
+                : "Nothing to show right now"}
+            </p>
+            <p className="mt-2 text-gray-300">
+              {isSearching ? "Try a different title or check the spelling." : "Please try again later."}
+            </p>
+          </div>
+        )}
+
+        {!error && !loading && series.length > 0 && (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
             {series.map((show) => (
               <Link
@@ -296,13 +319,13 @@ export default function SeriesPage() {
                     {show.name}
                   </h3>
 
-                  <div className="flex items-center justify-between text-xs text-gray-400">
+                  <div className="flex items-center justify-between gap-2 text-sm text-gray-200">
                     <div className="flex items-center space-x-1">
-                      <Star className="w-3 h-3 text-yellow-400 fill-current" />
-                      <span>{show.vote_average.toFixed(1)}</span>
+                      <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                      <span className="font-medium">{show.vote_average > 0 ? show.vote_average.toFixed(1) : "NR"}</span>
                     </div>
                     <div className="flex items-center space-x-1">
-                      <Calendar className="w-3 h-3" />
+                      <Calendar className="w-4 h-4 text-gray-300" />
                       <span>{formatDate(show?.first_air_date)}</span>
                     </div>
                   </div>
@@ -313,7 +336,7 @@ export default function SeriesPage() {
         )}
 
         {/* Pagination */}
-        {totalPages > 1 && renderPagination()}
+        {!loading && totalPages > 1 && renderPagination()}
       </main>
 
       <Footer />
