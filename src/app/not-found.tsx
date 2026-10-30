@@ -11,7 +11,7 @@ export default function NotFound() {
           href="/"
           className="text-3xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent"
         >
-          CineWolf
+          CineStream
         </Link>
         <p className="mt-10 text-8xl font-extrabold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">
           404

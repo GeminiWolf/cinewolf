@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     template: "%s | CineStream",
   },
   description:
-    "CineWolf: browse trending, popular and top rated movies and TV shows, with trailers, ratings and details.",
+    "CineStream: browse trending, popular and top rated movies and TV shows, with trailers, ratings and details.",
 };
 
 export default function RootLayout({
